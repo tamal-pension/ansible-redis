@@ -1,0 +1,27 @@
+---
+discord_webhook: https://discord.com/api/webhooks/{{ discord_message_webhook_id }}/{{ discord_message_webhook_token }}
+discord_channel: "#notifications"
+private_domain: pension-stg.local
+app_user: "redis"
+app_group: "{{ app_user }}"
+users_groups:
+  - name: "{{ app_group }}"
+users:
+  - name: "{{ app_user }}"
+    group: "{{ app_group }}"
+    append: yes
+disk:
+    name: /dev/sdb
+    mount_options: defaults,noatime
+    mount: /data
+    size: 100 
+    fstype: xfs
+    data_folder: lib
+    user: "{{ redis_user }}"
+    group: "{{ redis_group }}"
+    kms_key_id: "{{ disk_kms_key_id }}"
+    delete_on_termination: yes
+consul_cluster_tag_value: v1
+private_ip: "{{ ansible_default_ipv4['address'] }}"
+aws_iam_role: "redis-role"
+redis_service_name: redis
