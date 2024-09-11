@@ -1,16 +1,14 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
 # vagrant plugin install vagrant-aws 
-## optional:
-# export COMMON_COLLECTION_PATH='~/git/opinion-ansible/ansible-common-collection'
 # vagrant up --provider=aws
 # vagrant destroy -f && vagrant up --provider=aws
+## optional:
+# export COMMON_COLLECTION_PATH='~/git/inqwise/ansible/ansible-common-collection'
+# export STACKTREK_COLLECTION_PATH='~/git/inqwise/ansible/ansible-stack-trek'
 
 MAIN_SCRIPT_URL = "https://raw.githubusercontent.com/inqwise/ansible-automation-toolkit/default/main_amzn2023.sh"
 TOPIC_NAME = "pre_playbook_errors"
 ACCOUNT_ID = "339712742264"
 AWS_REGION = "eu-west-1"
-ES_CLUSTER = "pension-test-#{Etc.getpwuid(Process.uid).name}"
 MAIN_SH_ARGS = <<MARKER
 -e "playbook_name=ansible-redis discord_message_owner_name=#{Etc.getpwuid(Process.uid).name}"
 MARKER
@@ -48,8 +46,9 @@ Vagrant.configure("2") do |config|
   	override.vm.box = "dummy"
     override.ssh.username = "ec2-user"
     override.ssh.private_key_path = "~/.ssh/id_rsa"
-    aws.access_key_id             = `op read "op://Security/aws pension-stg/Security/Access key ID"`.strip!
-    aws.secret_access_key         = `op read "op://Security/aws pension-stg/Security/Secret access key"`.strip!
+    aws.aws_dir = ENV['HOME'] + "/.aws/"
+    aws.aws_profile = "pension-stg"
+  
     aws.keypair_name = Etc.getpwuid(Process.uid).name
     override.vm.allowed_synced_folder_types = [:rsync]
     override.vm.synced_folder ".", "/vagrant", type: :rsync, rsync__exclude: ['.git/','inqwise/'], disabled: false
@@ -60,19 +59,18 @@ Vagrant.configure("2") do |config|
 
 
     aws.region = AWS_REGION
-    aws.security_groups = ["sg-077f8d7d58d420467"]
+    aws.security_groups = ["sg-077f8d7d58d420467", "sg-0f287cc27125c928b"]
+    # public-ssh, redis
     aws.ami = "ami-0fa86d752d8b7d1ff"
-    aws.instance_type = "r6g.medium"
-    aws.subnet_id = "subnet-0a5b54a2e357621e5"
+    aws.instance_type = "t4g.medium"
+    aws.subnet_id = "subnet-0331d92e81f166c9f"
     aws.associate_public_ip = true
     aws.iam_instance_profile_name = "bootstrap-role"
     aws.tags = {
-        Name: "redis-test01",
-        private_dns: "redis-test01",
-        _replicaof: "redis01.anopa-stg.local",
+        Name: "redis-test-#{Etc.getpwuid(Process.uid).name}",
+        private_dns: "redis-test-#{Etc.getpwuid(Process.uid).name}",
+        _replicaof: "redis01.pension-stg.local",
         _data_snapshot: "snap-0341e1374b827ef5e"
       }
   end
 end
-# aws.security_groups = ["sg-049e1c31339a364a6", "sg-0fa99390aabcd150c", "sg-0ad49a7b6b83d061f"]
-# public-ssh, backend, elastic
