@@ -17,6 +17,8 @@
 - name: Redis role
   ansible.builtin.import_role:
     name: inqwise.stacktrek.redis
+  vars:
+    redis_data_dir: "/data/redis"
 
 - name: Install Alloy
   ansible.builtin.include_role:
