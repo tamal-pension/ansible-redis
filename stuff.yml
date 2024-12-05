@@ -13,6 +13,7 @@
     tags_facts:
       private_dns: "private_dns"
       replicaof: "replicaof"
+      disk_delete_on_termination: "disk_delete_on_termination"
   
 - name: Redis role
   ansible.builtin.import_role:
