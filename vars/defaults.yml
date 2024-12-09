@@ -10,9 +10,8 @@ disk:
   fstype: ext4
   size: "{{ disk_size | default(10) }}"
   data_folder: redis
-  user: "{{ app_user }}"
-  group: "{{ app_group }}"
+  user: root
+  group: root
   kms_key_id: "{{ disk_kms_key_id }}"
   delete_on_termination: "{{ disk_delete_on_termination | default(true) }}"
   app: redis-data
-
